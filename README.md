@@ -18,22 +18,6 @@ API REST desarrollada con **Spring Boot** para la gestión de productos.
 - Maven
 - H2 Database (desarrollo)
 
-## Estructura
-
-src/
-├── main/
-│   ├── java/com/diego/vikings_api/
-│   │   ├── controlador/
-│   │   │   └── ProductoController.java
-│   │   ├── modelo/
-│   │   │   └── Producto.java
-│   │   ├── repositorio/
-│   │   │   └── ProductoRepository.java
-│   │   └── VikingsApiApplication.java
-│   └── resources/
-└── test/
-
-
 
 ## Autor
 Diego Fernando Vera Reyes
