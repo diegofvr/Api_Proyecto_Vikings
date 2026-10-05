@@ -1,4 +1,4 @@
-# Vikings API
+# Vikingos API
 
 API REST para un e-commerce de ropa y calzado deportivo, desarrollada con Java y Spring Boot. Es un proyecto personal y académico, creado mientras aprendo desarrollo de software.
 
