@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Vikings - Productos</title>
+</head>
+<body>
+<h1>Productos Vikings</h1>
+
+<h2>Agregar producto</h2>
+<input type="text" id="producto" placeholder="Producto">
+<input type="text" id="marca" placeholder="Marca">
+<input type="text" id="talla" placeholder="Talla">
+<input type="text" id="color" placeholder="Color">
+<input type="number" id="precio" placeholder="Precio">
+<input type="number" id="categoriaId" placeholder="ID de categoría">
+<button onclick="crearProducto()">Guardar</button>
+<p id="mensaje"></p>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Producto</th>
+        <th>Marca</th>
+        <th>Talla</th>
+        <th>Color</th>
+        <th>Precio</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody id="tabla-productos"></tbody>
+</table>
+
+<script>
+    async function cargarProductos() {
+        const respuesta = await fetch("/api/productos");
+        const productos = await respuesta.json();
+
+        const cuerpoTabla = document.getElementById("tabla-productos");
+        cuerpoTabla.innerHTML = "";
+
+        for (const p of productos) {
+            cuerpoTabla.innerHTML += `
+          <tr>
+            <td>${p.id}</td>
+            <td>${p.producto}</td>
+            <td>${p.marca}</td>
+            <td>${p.talla}</td>
+            <td>${p.color}</td>
+            <td>${p.precio}</td>
+            <td>
+              <button onclick="editarProducto(${p.id})">Editar</button>
+              <button onclick="eliminarProducto(${p.id})">Eliminar</button>
+            </td>
+          </tr>`;
+        }
+    }
+
+    async function crearProducto() {
+        const nuevoProducto = {
+            producto: document.getElementById("producto").value,
+            marca: document.getElementById("marca").value,
+            talla: document.getElementById("talla").value,
+            color: document.getElementById("color").value,
+            precio: parseFloat(document.getElementById("precio").value),
+            categoria: { id: parseInt(document.getElementById("categoriaId").value) }
+        };
+
+        const respuesta = await fetch("/api/productos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(nuevoProducto)
+        });
+
+        const mensaje = document.getElementById("mensaje");
+        if (respuesta.ok) {
+            mensaje.textContent = "Producto guardado correctamente";
+            cargarProductos();
+        } else {
+            mensaje.textContent = "No se pudo guardar (código " + respuesta.status + ")";
+        }
+    }
+
+    async function eliminarProducto(id) {
+        if (!confirm("¿Seguro que quieres eliminar el producto " + id + "?")) {
+            return;
+        }
+
+        const respuesta = await fetch("/api/productos/" + id, {
+            method: "DELETE"
+        });
+
+        const mensaje = document.getElementById("mensaje");
+        if (respuesta.ok) {
+            mensaje.textContent = "Producto eliminado correctamente";
+            cargarProductos();
+        } else {
+            mensaje.textContent = "No se pudo eliminar (código " + respuesta.status + ")";
+        }
+    }
+
+    async function editarProducto(id) {
+        const respuesta = await fetch("/api/productos/" + id);
+        const p = await respuesta.json();
+
+        document.getElementById("producto").value = p.producto;
+        document.getElementById("marca").value = p.marca;
+        document.getElementById("talla").value = p.talla;
+        document.getElementById("color").value = p.color;
+        document.getElementById("precio").value = p.precio;
+        document.getElementById("categoriaId").value = p.categoria ? p.categoria.id : "";
+    }
+
+    cargarProductos();
+</script>
+</body>
+</html>
