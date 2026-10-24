@@ -4,6 +4,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +29,25 @@ public class ManejadorGlobalExcepciones {
         return ResponseEntity.badRequest().body(cuerpo);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, Object>> manejarIntegridad(DataIntegrityViolationException ex) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> manejarValidacion(MethodArgumentNotValidException ex) {
+        Map<String, String> errores = new HashMap<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errores.put(error.getField(), error.getDefaultMessage());
+        }
+
         Map<String, Object> cuerpo = new HashMap<>();
-        cuerpo.put("estado", 409);
-        cuerpo.put("mensaje", "La operación no es posible porque hay datos relacionados (por ejemplo, una categoría que tiene productos)");
-        return ResponseEntity.status(409).body(cuerpo);
+        cuerpo.put("estado", 400);
+        cuerpo.put("mensaje", "Hay datos inválidos");
+        cuerpo.put("errores", errores);
+        return ResponseEntity.badRequest().body(cuerpo);
+    }
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<Map<String, Object>> manejarCredencialesInvalidas(CredencialesInvalidasException ex) {
+        Map<String, Object> cuerpo = new HashMap<>();
+        cuerpo.put("estado", 401);
+        cuerpo.put("mensaje", ex.getMessage());
+        return ResponseEntity.status(401).body(cuerpo);
     }
 }

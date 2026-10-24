@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Vikings - Iniciar sesión</title>
+</head>
+<body>
+<h1>Vikings</h1>
+<h2>Iniciar sesión</h2>
+
+<input type="email" id="correo" placeholder="Correo">
+<input type="password" id="contrasena" placeholder="Contraseña">
+<button onclick="iniciarSesion()">Entrar</button>
+<p id="mensaje"></p>
+
+<script>
+    async function iniciarSesion() {
+        const datos = {
+            correo: document.getElementById("correo").value,
+            contrasena: document.getElementById("contrasena").value
+        };
+
+        const respuesta = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(datos)
+        });
+
+        const mensaje = document.getElementById("mensaje");
+
+        if (respuesta.ok) {
+            const resultado = await respuesta.json();
+            sessionStorage.setItem("clienteNombre", resultado.cliente.nombre);
+            window.location.href = "productos.html";
+        } else {
+            const error = await respuesta.json();
+            let texto = error.mensaje || "No se pudo iniciar sesión (código " + respuesta.status + ")";
+
+            if (error.errores) {
+                texto = Object.values(error.errores).join(". ");
+            }
+
+            mensaje.textContent = texto;
+        }
+    }
+</script>
+</body>
+</html>

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "clientes")
@@ -27,6 +28,9 @@ public class Cliente {
 
     private String telefono;
     private String direccion;
+    @NotBlank(message = "La contraseña es obligatoria")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String contrasena;
 
     public Cliente() {
     }
@@ -76,5 +80,14 @@ public class Cliente {
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
+
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 }

@@ -7,6 +7,11 @@
 <body>
 <h1>Productos Vikings</h1>
 
+<p>
+    Hola, <span id="nombre-cliente"></span>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+</p>
+
 <h2>Agregar producto</h2>
 <input type="text" id="producto" placeholder="Producto">
 <input type="text" id="marca" placeholder="Marca">
@@ -14,7 +19,7 @@
 <input type="text" id="color" placeholder="Color">
 <input type="number" id="precio" placeholder="Precio">
 <input type="number" id="categoriaId" placeholder="ID de categoría">
-<button onclick="crearProducto()">Guardar</button>
+<button onclick="guardarProducto()">Guardar</button>
 <p id="mensaje"></p>
 
 <table border="1">
@@ -33,6 +38,16 @@
 </table>
 
 <script>
+    const clienteNombre = sessionStorage.getItem("clienteNombre");
+
+    if (clienteNombre === null) {
+        window.location.href = "login.html";
+    }
+
+    document.getElementById("nombre-cliente").textContent = clienteNombre;
+
+    let idEditando = null;
+
     async function cargarProductos() {
         const respuesta = await fetch("/api/productos");
         const productos = await respuesta.json();
@@ -57,8 +72,8 @@
         }
     }
 
-    async function crearProducto() {
-        const nuevoProducto = {
+    async function guardarProducto() {
+        const datos = {
             producto: document.getElementById("producto").value,
             marca: document.getElementById("marca").value,
             talla: document.getElementById("talla").value,
@@ -67,19 +82,49 @@
             categoria: { id: parseInt(document.getElementById("categoriaId").value) }
         };
 
-        const respuesta = await fetch("/api/productos", {
-            method: "POST",
+        let url = "/api/productos";
+        let metodo = "POST";
+
+        if (idEditando !== null) {
+            url = "/api/productos/" + idEditando;
+            metodo = "PUT";
+        }
+
+        const respuesta = await fetch(url, {
+            method: metodo,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(nuevoProducto)
+            body: JSON.stringify(datos)
         });
 
         const mensaje = document.getElementById("mensaje");
         if (respuesta.ok) {
-            mensaje.textContent = "Producto guardado correctamente";
+            if (metodo === "PUT") {
+                mensaje.textContent = "Producto actualizado correctamente";
+            } else {
+                mensaje.textContent = "Producto guardado correctamente";
+            }
+            limpiarFormulario();
             cargarProductos();
         } else {
-            mensaje.textContent = "No se pudo guardar (código " + respuesta.status + ")";
+            const error = await respuesta.json();
+            let texto = error.mensaje || "No se pudo guardar (código " + respuesta.status + ")";
+
+            if (error.errores) {
+                texto = Object.values(error.errores).join(". ");
+            }
+
+            mensaje.textContent = texto;
         }
+    }
+
+    function limpiarFormulario() {
+        document.getElementById("producto").value = "";
+        document.getElementById("marca").value = "";
+        document.getElementById("talla").value = "";
+        document.getElementById("color").value = "";
+        document.getElementById("precio").value = "";
+        document.getElementById("categoriaId").value = "";
+        idEditando = null;
     }
 
     async function eliminarProducto(id) {
@@ -110,6 +155,14 @@
         document.getElementById("color").value = p.color;
         document.getElementById("precio").value = p.precio;
         document.getElementById("categoriaId").value = p.categoria ? p.categoria.id : "";
+
+        idEditando = id;
+        document.getElementById("mensaje").textContent = "Editando el producto " + id;
+    }
+
+    function cerrarSesion() {
+        sessionStorage.removeItem("clienteNombre");
+        window.location.href = "login.html";
     }
 
     cargarProductos();
