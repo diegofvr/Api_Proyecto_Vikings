@@ -5,6 +5,7 @@ import com.diego.vikings_api.modelo.Cliente;
 import com.diego.vikings_api.repositorio.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -13,6 +14,8 @@ public class AuthService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public Cliente iniciarSesion(String correo, String contrasena) {
         Optional<Cliente> resultado = clienteRepository.findByCorreo(correo);
@@ -23,7 +26,7 @@ public class AuthService {
 
         Cliente cliente = resultado.get();
 
-        if (cliente.getContrasena() == null || !cliente.getContrasena().equals(contrasena)) {
+        if (cliente.getContrasena() == null || !encoder.matches(contrasena, cliente.getContrasena())) {
             throw new CredencialesInvalidasException("Correo o contraseña incorrectos");
         }
 

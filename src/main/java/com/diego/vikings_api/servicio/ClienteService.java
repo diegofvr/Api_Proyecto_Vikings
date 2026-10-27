@@ -6,6 +6,7 @@ import com.diego.vikings_api.modelo.Cliente;
 import com.diego.vikings_api.repositorio.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,9 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+
 
     public List<Cliente> listarClientes() {
         return clienteRepository.findAll();
@@ -34,6 +38,7 @@ public class ClienteService {
             throw new SolicitudInvalidaException("Ya existe un cliente con el correo " + cliente.getCorreo());
         }
         cliente.setId(null);
+        cliente.setContrasena(encoder.encode(cliente.getContrasena()));   // <-- NUEVA
         return clienteRepository.save(cliente);
     }
 
