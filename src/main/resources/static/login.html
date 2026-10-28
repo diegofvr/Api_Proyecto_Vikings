@@ -2,16 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Vikings - Iniciar sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
-<h1>Vikings</h1>
-<h2>Iniciar sesión</h2>
+<main class="login">
+    <section class="login-foto">
+        <img src="logo-vikings.png" alt="Jugadores con medias y guayos de la marca Vikings">
+    </section>
 
-<input type="email" id="correo" placeholder="Correo">
-<input type="password" id="contrasena" placeholder="Contraseña">
-<button onclick="iniciarSesion()">Entrar</button>
-<p id="mensaje"></p>
+    <section class="login-formulario">
+        <h1>Inicio de sesión</h1>
+
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo">
+
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena">
+
+        <button onclick="iniciarSesion()">Iniciar sesión</button>
+        <p id="mensaje"></p>
+    </section>
+</main>
 
 <script>
     async function iniciarSesion() {
