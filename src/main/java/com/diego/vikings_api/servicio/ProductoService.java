@@ -48,7 +48,11 @@ public class ProductoService {
         producto.setTalla(datosNuevos.getTalla());
         producto.setColor(datosNuevos.getColor());
         producto.setPrecio(datosNuevos.getPrecio());
+        if (datosNuevos.getImagen() != null) {
+            producto.setImagen(datosNuevos.getImagen());
+        }
         producto.setCategoria(categoria);
+        producto.setImagen(datosNuevos.getImagen());
 
         return productoRepository.save(producto);
     }

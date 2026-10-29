@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vikings - Tienda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tienda.css">
+</head>
+<body>
+
+<section class="banner" id="banner">
+    <div class="banner-texto">
+        <p class="banner-etiqueta" id="banner-etiqueta"></p>
+        <h1 id="banner-titulo"></h1>
+        <p class="banner-descripcion" id="banner-descripcion"></p>
+        <a class="banner-boton" href="#productos">Ver colección</a>
+    </div>
+    <div class="banner-puntos" id="banner-puntos"></div>
+</section>
+
+<section class="productos" id="productos">
+    <h2>Productos destacados</h2>
+    <div class="filtros" id="filtros"></div>
+    <div class="productos-grid" id="productos-grid"></div>
+</section>
+
+<script>
+    // ---------- BANNER ----------
+    const slides = [
+        {
+            imagen: "banner-principal.png",
+            etiqueta: "Nueva colección",
+            titulo: "Rendimiento en cada paso",
+            descripcion: "Equipamiento deportivo diseñado para llevar tu juego al siguiente nivel."
+        },
+        {
+            imagen: "banner-secundario.png",
+            etiqueta: "Rendimiento sin límites",
+            titulo: "Equipamiento para ganadores",
+            descripcion: "Ropa y accesorios deportivos diseñados para quienes nunca se detienen."
+        }
+    ];
+
+    let slideActual = 0;
+    let temporizador = null;
+
+    function mostrarSlide(indice) {
+        slideActual = indice;
+        const slide = slides[indice];
+
+        document.getElementById("banner").style.setProperty("--banner-imagen", `url("img/hero/${slide.imagen}")`);
+        document.getElementById("banner-etiqueta").textContent = slide.etiqueta;
+        document.getElementById("banner-titulo").textContent = slide.titulo;
+        document.getElementById("banner-descripcion").textContent = slide.descripcion;
+
+        dibujarPuntos();
+    }
+
+    function dibujarPuntos() {
+        const contenedor = document.getElementById("banner-puntos");
+        contenedor.innerHTML = "";
+
+        for (let i = 0; i < slides.length; i++) {
+            let clase = "punto";
+            if (i === slideActual) {
+                clase = "punto activo";
+            }
+            contenedor.innerHTML += `<button class="${clase}" onclick="irASlide(${i})" aria-label="Ver imagen ${i + 1}"></button>`;
+        }
+    }
+
+    function irASlide(indice) {
+        mostrarSlide(indice);
+        iniciarRotacion();
+    }
+
+    function siguienteSlide() {
+        mostrarSlide((slideActual + 1) % slides.length);
+    }
+
+    function iniciarRotacion() {
+        clearInterval(temporizador);
+
+        const sinMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (!sinMovimiento) {
+            temporizador = setInterval(siguienteSlide, 6000);
+        }
+    }
+
+    // ---------- PRODUCTOS ----------
+    let todosLosProductos = [];
+    let categoriaActiva = "Todos";
+
+    function formatearPrecio(valor) {
+        return "$ " + valor.toLocaleString("es-CO");
+    }
+
+    async function cargarProductos() {
+        const respuesta = await fetch("/api/productos");
+        todosLosProductos = await respuesta.json();
+
+        dibujarFiltros();
+        dibujarProductos();
+    }
+
+    function dibujarFiltros() {
+        const nombres = ["Todos"];
+
+        for (const p of todosLosProductos) {
+            if (p.categoria && !nombres.includes(p.categoria.nombre)) {
+                nombres.push(p.categoria.nombre);
+            }
+        }
+
+        const contenedor = document.getElementById("filtros");
+        contenedor.innerHTML = "";
+
+        for (const nombre of nombres) {
+            let clase = "filtro";
+            if (nombre === categoriaActiva) {
+                clase = "filtro activo";
+            }
+            contenedor.innerHTML += `<button class="${clase}" onclick="filtrar('${nombre}')">${nombre}</button>`;
+        }
+    }
+
+    function filtrar(nombre) {
+        categoriaActiva = nombre;
+        dibujarFiltros();
+        dibujarProductos();
+    }
+
+    function dibujarProductos() {
+        const grid = document.getElementById("productos-grid");
+        grid.innerHTML = "";
+
+        for (const p of todosLosProductos) {
+            const nombreCategoria = p.categoria ? p.categoria.nombre : "";
+
+            if (categoriaActiva !== "Todos" && nombreCategoria !== categoriaActiva) {
+                continue;
+            }
+
+            let imagen = "<span>Sin imagen</span>";
+
+            if (p.imagen) {
+                imagen = `<img src="img/productos/${p.imagen}" alt="${p.producto}">`;
+            }
+
+            grid.innerHTML += `
+              <article class="tarjeta">
+                <div class="tarjeta-imagen">${imagen}</div>
+                <div class="tarjeta-info">
+                  <h3 class="tarjeta-nombre">${p.producto}</h3>
+                  <p class="tarjeta-detalle">${p.marca} · Talla ${p.talla} · ${p.color}</p>
+                  <p class="tarjeta-precio">${formatearPrecio(p.precio)}</p>
+                </div>
+              </article>`;
+        }
+    }
+
+    // ---------- ARRANQUE ----------
+    mostrarSlide(0);
+    iniciarRotacion();
+    cargarProductos();
+</script>
+
+</body>
+</html>

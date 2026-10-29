@@ -19,7 +19,6 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @NotBlank(message = "El nombre del producto es obligatorio")
     private String producto;
 
@@ -36,11 +35,11 @@ public class Producto {
     @Positive(message = "El precio debe ser mayor que 0")
     private Double precio;
 
+    private String imagen;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
-
 
     public Producto() {
     }
@@ -99,6 +98,14 @@ public class Producto {
 
     public void setPrecio(Double precio) {
         this.precio = precio;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public Categoria getCategoria() {
