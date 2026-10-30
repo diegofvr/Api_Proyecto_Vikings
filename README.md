@@ -1,32 +1,40 @@
 # Vikingos API
 
-API REST para un e-commerce de ropa y calzado deportivo, desarrollada con Java y Spring Boot. Es un proyecto personal y académico, creado mientras aprendo desarrollo de software.
+Aplicación web de comercio electrónico de ropa y calzado deportivo, desarrollada con Java y Spring Boot. Incluye una API REST, una base de datos MySQL y un front-end sencillo en HTML, CSS y JavaScript (inicio de sesión, tienda y administración de productos).
 
+Es un proyecto personal y académico, creado mientras aprendo desarrollo de software.
 ## Características
 
-- CRUD completo de **productos**
-- CRUD completo de **categorías**
-- Relación entre productos y categorías (cada producto pertenece a una categoría)
-- Validación de datos de entrada (campos obligatorios, precio mayor que 0)
-- Manejo centralizado de errores con respuestas JSON claras (400, 404, 409)
-- Arquitectura en capas: Controller → Service → Repository → Base de datos
-- Persistencia en MySQL con Spring Data JPA e Hibernate
+Características
+CRUD completo de productos, con imagen
+CRUD completo de categorías
+CRUD de clientes
+Inicio de sesión con contraseñas cifradas (BCrypt)
+Relación entre productos y categorías (cada producto pertenece a una categoría)
+Validación de datos de entrada (campos obligatorios, precio mayor que 0, correo con formato válido)
+Manejo centralizado de errores con respuestas JSON claras (400, 401, 404, 409)
+Arquitectura en capas: Controlador → Servicio → Repositorio → Base de datos
+Persistencia en MySQL con Spring Data JPA e Hibernate
+Front-end: página de login, tienda con banner y filtros por categoría, y panel para administrar productos
 
 ## Tecnologías
 
-| Tecnología | Versión / uso |
-|---|---|
-| Java | 17 |
-| Spring Boot | 4.1.1 |
-| Spring Data JPA (Hibernate) | Acceso a la base de datos |
-| Spring Validation | Validación de datos de entrada |
-| MySQL | Base de datos |
-| Maven | Gestión de dependencias y construcción |
+Tecnología	Versión / uso
+Java	17
+Spring Boot	4.1.1
+Spring Data JPA (Hibernate)	Acceso a la base de datos
+Spring Validation	Validación de datos de entrada
+Spring Security Crypto	Cifrado de contraseñas (BCrypt)
+MySQL	Base de datos
+Maven	Gestión de dependencias y construcción
+HTML, CSS y JavaScript	Front-end, servido por la propia aplicación
 
 ## Arquitectura
 
-```
-Cliente HTTP (Postman, navegador...)
+
+La aplicación es un monolito: el mismo proyecto sirve la API y las páginas del front-end.
+
+Navegador (login.html, tienda.html, productos.html) / Postman
         │
         ▼
 Controller   → recibe la petición HTTP y arma la respuesta
@@ -44,13 +52,21 @@ MySQL
 ## Estructura del proyecto
 
 ```
-src/main/java/com/diego/vikings_api
-├── controlador   → ProductoController, CategoriaController
-├── servicio      → ProductoService, CategoriaService
-├── repositorio   → ProductoRepository, CategoriaRepository
-├── modelo        → Producto, Categoria
-├── excepcion     → RecursoNoEncontradoException, SolicitudInvalidaException, ManejadorGlobalExcepciones
-└── VikingsApiApplication.java
+src/main
+├── java/com/diego/vikings_api
+│   ├── controlador   → ProductoController, CategoriaController, ClienteController, AuthController
+│   ├── servicio      → ProductoService, CategoriaService, ClienteService, AuthService
+│   ├── repositorio   → ProductoRepository, CategoriaRepository, ClienteRepository
+│   ├── modelo        → Producto, Categoria, Cliente
+│   ├── dto           → LoginRequest
+│   ├── excepcion     → RecursoNoEncontradoException, SolicitudInvalidaException,
+│   │                   CredencialesInvalidasException, ManejadorGlobalExcepciones
+│   └── VikingsApiApplication.java
+└── resources/static
+    ├── login.html, login.css
+    ├── tienda.html, tienda.css
+    ├── productos.html
+    └── img/          → imágenes del banner y de los productos
 ```
 
 ## Requisitos previos
@@ -104,6 +120,22 @@ mvnw.cmd spring-boot:run
 ```
 
 La API queda disponible en `http://localhost:8080`.
+
+Primeros pasos después de arrancar
+
+La base de datos empieza vacía. Para probar la tienda, crea los datos en este orden (por ejemplo con Postman):
+
+Una categoría: POST /api/categorias con { "nombre": "Camisetas" }.
+Uno o más productos que usen esa categoría (ver ejemplo más abajo). Las fotos van en src/main/resources/static/img/productos/ y en el producto se guarda solo el nombre del archivo.
+Un cliente con correo y contraseña: POST /api/clientes.
+Abrir http://localhost:8080/login.html e iniciar sesión con ese cliente.
+Páginas
+Página	Ruta	Descripción
+Inicio de sesión	/login.html	Formulario de correo y contraseña
+Tienda	/tienda.html	Banner, filtros por categoría y tarjetas de producto
+Administración	/productos.html	Crear, editar y eliminar productos
+
+La tienda y la administración redirigen al login si no hay una sesión iniciada.
 
 ## Endpoints
 
@@ -177,11 +209,12 @@ Los errores devuelven un JSON con el código de estado y un mensaje.
 
 En desarrollo. Pendiente:
 
-- [ ] Clientes
-- [ ] Pedidos y detalle de pedido
-- [ ] Frontend (HTML, CSS y JavaScript)
-- [ ] Pruebas automáticas
-
+Registro de clientes desde la página
+Carrito de compras, pedidos y detalle de pedido
+Seguridad real de la API (Spring Security y tokens)
+Roles de usuario (cliente y administrador)
+Lista desplegable de categorías en el formulario de administración
+Pruebas automáticas
 ## Autor
 
 **Diego Fernando Vera Reyes**
