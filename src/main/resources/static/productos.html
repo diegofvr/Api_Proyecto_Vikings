@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Vikings - Productos</title>
+    <title>Vikings - Administrar productos</title>
 </head>
 <body>
 <h1>Productos Vikings</h1>
 
 <p>
+    <a href="tienda.html">← Volver a la tienda</a> |
     Hola, <span id="nombre-cliente"></span>
     <button onclick="cerrarSesion()">Cerrar sesión</button>
 </p>
@@ -19,6 +20,7 @@
 <input type="text" id="color" placeholder="Color">
 <input type="number" id="precio" placeholder="Precio">
 <input type="number" id="categoriaId" placeholder="ID de categoría">
+<input type="text" id="imagen" placeholder="Imagen (ej: gorra-vikings.png)">
 <button onclick="guardarProducto()">Guardar</button>
 <p id="mensaje"></p>
 
@@ -26,6 +28,7 @@
     <thead>
     <tr>
         <th>ID</th>
+        <th>Imagen</th>
         <th>Producto</th>
         <th>Marca</th>
         <th>Talla</th>
@@ -56,9 +59,16 @@
         cuerpoTabla.innerHTML = "";
 
         for (const p of productos) {
+            let miniatura = "—";
+
+            if (p.imagen) {
+                miniatura = `<img src="img/productos/${p.imagen}" alt="${p.producto}" width="48">`;
+            }
+
             cuerpoTabla.innerHTML += `
           <tr>
             <td>${p.id}</td>
+            <td>${miniatura}</td>
             <td>${p.producto}</td>
             <td>${p.marca}</td>
             <td>${p.talla}</td>
@@ -79,6 +89,7 @@
             talla: document.getElementById("talla").value,
             color: document.getElementById("color").value,
             precio: parseFloat(document.getElementById("precio").value),
+            imagen: document.getElementById("imagen").value.trim(),
             categoria: { id: parseInt(document.getElementById("categoriaId").value) }
         };
 
@@ -124,6 +135,7 @@
         document.getElementById("color").value = "";
         document.getElementById("precio").value = "";
         document.getElementById("categoriaId").value = "";
+        document.getElementById("imagen").value = "";
         idEditando = null;
     }
 
@@ -155,6 +167,7 @@
         document.getElementById("color").value = p.color;
         document.getElementById("precio").value = p.precio;
         document.getElementById("categoriaId").value = p.categoria ? p.categoria.id : "";
+        document.getElementById("imagen").value = p.imagen ? p.imagen : "";
 
         idEditando = id;
         document.getElementById("mensaje").textContent = "Editando el producto " + id;

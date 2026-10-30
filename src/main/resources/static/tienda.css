@@ -204,6 +204,77 @@ body {
   font-size: 1.25rem;
   font-weight: 700;
 }
+.encabezado {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px clamp(24px, 6vw, 96px);
+  color: #ffffff;
+  background: #0b0d0f;
+  border-bottom: 1px solid #23282d;
+}
+
+.encabezado-marca {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #e6ebe0;
+}
+
+.encabezado-menu {
+  display: flex;
+  gap: 28px;
+}
+
+.encabezado-menu a {
+  font-weight: 600;
+  text-decoration: none;
+  color: #e6ebe0;
+}
+
+.encabezado-menu a:hover {
+  color: #d6f22e;
+}
+
+.encabezado-usuario {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.95rem;
+}
+
+.boton-salir {
+  padding: 8px 16px;
+  font-family: inherit;
+  font-weight: 600;
+  color: #d6f22e;
+  background: transparent;
+  border: 1px solid #d6f22e;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.boton-salir:hover {
+  color: #0b0d0f;
+  background: #d6f22e;
+}
+
+.encabezado a:focus-visible,
+.boton-salir:focus-visible {
+  outline: 3px solid #d6f22e;
+  outline-offset: 3px;
+}
+
+#productos {
+  scroll-margin-top: 72px;
+}
 
 @media (max-width: 800px) {
   .banner {

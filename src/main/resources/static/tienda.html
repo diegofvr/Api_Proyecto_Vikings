@@ -4,10 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Vikings - Tienda</title>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Cinzel:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="tienda.css">
 </head>
 <body>
+
+<header class="encabezado">
+    <a class="encabezado-marca" href="tienda.html">Vikings</a>
+
+    <nav class="encabezado-menu">
+        <a href="#banner">Inicio</a>
+        <a href="#productos">Tienda</a>
+        <a href="productos.html">Administrar</a>
+    </nav>
+
+    <div class="encabezado-usuario">
+        <span>Hola, <strong id="nombre-cliente"></strong></span>
+        <button class="boton-salir" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+</header>
 
 <section class="banner" id="banner">
     <div class="banner-texto">
@@ -26,6 +41,20 @@
 </section>
 
 <script>
+    // ---------- SESIÓN ----------
+    const clienteNombre = sessionStorage.getItem("clienteNombre");
+
+    if (clienteNombre === null) {
+        window.location.href = "login.html";
+    }
+
+    document.getElementById("nombre-cliente").textContent = clienteNombre;
+
+    function cerrarSesion() {
+        sessionStorage.removeItem("clienteNombre");
+        window.location.href = "login.html";
+    }
+
     // ---------- BANNER ----------
     const slides = [
         {

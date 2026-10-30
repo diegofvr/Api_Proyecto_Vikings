@@ -45,7 +45,7 @@
         if (respuesta.ok) {
             const resultado = await respuesta.json();
             sessionStorage.setItem("clienteNombre", resultado.cliente.nombre);
-            window.location.href = "productos.html";
+            window.location.href = "tienda.html";
         } else {
             const error = await respuesta.json();
             let texto = error.mensaje || "No se pudo iniciar sesión (código " + respuesta.status + ")";
